@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "gckDDOmSdVGXv+6snJhkT4uFYe6F9kU9xgrJ6P+JpIM=",
+  "Source": "DocumentProcessor",
+  "BasePath": "_content/DocumentProcessor",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
