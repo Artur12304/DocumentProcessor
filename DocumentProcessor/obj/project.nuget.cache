@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "Y0Vvf6iY738+h6iYj7nygiYIBCZ6G2tMSCpnIIE5oESWCDrO3j7sALgXnEHDSHARarmvCA2ZumxzGh7hglAI/g==",
+  "dgSpecHash": "J7sYFtH0g0adqidfjpJrO9re+/LLpeoyU/QfP84PT9cNqP9j3Xwg0rHaGkpzNVU4K1hRPnTztuHVW1ttpiFUng==",
   "success": true,
-  "projectFilePath": "C:\\Users\\Artur\\Desktop\\ZadanieVS\\Zadanie\\WebApplication1\\WebApplication1\\DocumentProcessor.csproj",
+  "projectFilePath": "C:\\Users\\Artur\\Desktop\\ZadanieVS\\Zadanie\\Zadanko\\DocumentProcessor\\DocumentProcessor\\DocumentProcessor.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Artur\\.nuget\\packages\\microsoft.extensions.apidescription.server\\3.0.0\\microsoft.extensions.apidescription.server.3.0.0.nupkg.sha512",
     "C:\\Users\\Artur\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",

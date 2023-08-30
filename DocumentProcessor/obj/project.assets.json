@@ -229,11 +229,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Artur\\Desktop\\ZadanieVS\\Zadanie\\WebApplication1\\WebApplication1\\DocumentProcessor.csproj",
+      "projectUniqueName": "C:\\Users\\Artur\\Desktop\\ZadanieVS\\Zadanie\\Zadanko\\DocumentProcessor\\DocumentProcessor\\DocumentProcessor.csproj",
       "projectName": "DocumentProcessor",
-      "projectPath": "C:\\Users\\Artur\\Desktop\\ZadanieVS\\Zadanie\\WebApplication1\\WebApplication1\\DocumentProcessor.csproj",
+      "projectPath": "C:\\Users\\Artur\\Desktop\\ZadanieVS\\Zadanie\\Zadanko\\DocumentProcessor\\DocumentProcessor\\DocumentProcessor.csproj",
       "packagesPath": "C:\\Users\\Artur\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Artur\\Desktop\\ZadanieVS\\Zadanie\\WebApplication1\\WebApplication1\\obj\\",
+      "outputPath": "C:\\Users\\Artur\\Desktop\\ZadanieVS\\Zadanie\\Zadanko\\DocumentProcessor\\DocumentProcessor\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Artur\\AppData\\Roaming\\NuGet\\NuGet.Config",
