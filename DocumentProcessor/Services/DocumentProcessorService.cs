@@ -6,26 +6,23 @@ namespace DocumentProcessor.Services
 
     public class DocumentProcessorService : IDocumentProcessorService
     {
-        public async Task<DocumentProcessResponse> ProcessDocument(DocumentProcessCommand command)
+        public DocumentProcessResponse ProcessDocument(DocumentProcessCommand command)
         {
             var documents = new List<Document>();
-            decimal maxFileValueProduct = 0;
-            string productsWithMaxNetValue = string.Empty;
+            decimal maxNetValue = 0;
+            var productsWithMaxNetValue = new List<string>();
+            Document currentDocument = null;
+            DocumentItem currentDocumentItem = null;
 
-            string[] lines = command.RequestBody.Split('\n');
+            var lines = command.RequestBody.Split('\n');
 
-            Document? currentDocument = null;
-
-            foreach (string line in lines)
+            foreach (var line in lines)
             {
-                string[] parts = line.Split(',');
+                var parts = line.Split(',');
 
-                if (parts.Length == 0)
-                {
-                    continue;
-                }
+                if (parts.Length == 0) continue;
 
-                string recordType = parts[0];
+                var recordType = parts[0];
 
                 if (recordType == "H")
                 {
@@ -34,50 +31,48 @@ namespace DocumentProcessor.Services
                         Header = ParseHeader(parts),
                         Items = new List<DocumentItem>()
                     };
-
                     documents.Add(currentDocument);
-
-                    var maxNetValueProduct = currentDocument.Items.OrderByDescending(item => item.NetValue).FirstOrDefault();
-                    if (maxNetValueProduct != null)
+                }
+                else if (recordType == "C")
+                {
+                    if (currentDocument is null)
                     {
-                        if (maxFileValueProduct == maxNetValueProduct.NetValue)
+                        documents.Add(new Document
                         {
-                            productsWithMaxNetValue = String.Join(", ", productsWithMaxNetValue, maxNetValueProduct.ProductName);
-                        }
-                        else if (maxNetValueProduct.NetValue > maxFileValueProduct)
-                        {
-                            productsWithMaxNetValue = maxNetValueProduct.ProductName;
-                        }
+                            Description = string.Join(" ", parts.Skip(1))
+                        });
+                    }
+                    else
+                    {
+                        currentDocument.Description = string.Join(" ", parts.Skip(1));
                     }
                 }
-
                 else if (recordType == "B" && currentDocument != null)
                 {
-                    documents.Last().Items.Add(ParseItem(parts));
+                    currentDocumentItem = ParseItem(parts);
+                    currentDocument.Items.Add(currentDocumentItem);
+
+                    if (currentDocumentItem.NetValue > maxNetValue)
+                    {
+                        maxNetValue = currentDocumentItem.NetValue;
+                        productsWithMaxNetValue.Clear();
+                        productsWithMaxNetValue.Add(currentDocumentItem.ProductName);
+                    }
+                    else if (currentDocumentItem.NetValue == maxNetValue)
+                    {
+                        productsWithMaxNetValue.Add(currentDocumentItem.ProductName);
+                    }
                 }
             }
 
-            var maxNetValueProducts = new List<string>();
-
-            if (documents.Count > 0)
-            {
-                maxNetValueProducts = documents
-                    .SelectMany(doc => doc.Items)
-                    .GroupBy(item => item.NetValue)
-                    .OrderByDescending(group => group.Key)
-                    .FirstOrDefault()
-                    .Select(item => item.ProductName)
-                    .ToList();
-            }
-
-            DocumentProcessResponse response = new DocumentProcessResponse
+            var response = new DocumentProcessResponse
             {
                 Documents = documents,
-                LineCount = command.RequestBody.Split('\n').Length,
+                LineCount = lines.Length,
                 CharCount = command.RequestBody.Length,
                 Sum = documents.Sum(x => x.Items.Count),
                 XCount = documents.Count(x => x.Items.Count > command.NumberOfItems),
-                ProductsWithMaxNetValue = String.Join(", ", maxNetValueProducts)
+                ProductsWithMaxNetValue = string.Join(", ", productsWithMaxNetValue.Distinct())
             };
 
             return response;
@@ -85,7 +80,7 @@ namespace DocumentProcessor.Services
 
         private DocumentHeader ParseHeader(string[] parts)
         {
-            if (parts.Length < 16)
+            if (parts.Length != 17)
             {
                 throw new ArgumentException("Invalid Document header format. Header does not contain 15 parts.");
             }
@@ -112,7 +107,7 @@ namespace DocumentProcessor.Services
 
         private DocumentItem ParseItem(string[] parts)
         {
-            if (parts.Length < 12)
+            if (parts.Length != 13)
             {
                 throw new ArgumentException("Invalid DocumentItem format. Item does not contain 11 parts.");
             }

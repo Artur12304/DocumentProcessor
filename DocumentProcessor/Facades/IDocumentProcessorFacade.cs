@@ -4,6 +4,6 @@ namespace DocumentProcessor.Facades
 
     public interface IDocumentProcessorFacade
     {
-        Task<DocumentProcessResponse> ProcessDocument(DocumentProcessCommand command);
+        DocumentProcessResponse ProcessDocument(DocumentProcessCommand command);
     }
 }

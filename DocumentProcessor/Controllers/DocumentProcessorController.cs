@@ -2,16 +2,14 @@ namespace DocumentProcessor.Controllers
 {
     using DocumentProcessor.Data.Commands;
     using DocumentProcessor.Facades;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
-    using System.Text;
 
+    [Authorize]
     [ApiController]
     [Route("api/test")]
     public class DocumentProcessorController : ControllerBase
     {
-        private const string ValidUsername = "vs";
-        private const string ValidPassword = "rekrutacja";
-
         private readonly IDocumentProcessorFacade _documentProcessorFacade;
 
         public DocumentProcessorController(IDocumentProcessorFacade documentProcessorFacade)
@@ -20,17 +18,11 @@ namespace DocumentProcessor.Controllers
         }
 
         [HttpPost("{x}")]
-        public async Task<IActionResult> ProcessFile(IFormFile file, int x)
+        public IActionResult ProcessFile([FromForm] IFormFile file, [FromQuery] int x)
         {
             try
             {
-                string authHeader = Request.Headers["Authorization"];
-                if (!IsAuthorized(authHeader))
-                {
-                    return Unauthorized();
-                }
-
-                if (file == null)
+                if (file == null || file.Length == 0)
                 {
                     return BadRequest("No file uploaded.");
                 }
@@ -40,27 +32,32 @@ namespace DocumentProcessor.Controllers
                     return BadRequest("Invalid file format. Only .PUR files are allowed.");
                 }
 
-                using (StreamReader reader = new StreamReader(file.OpenReadStream()))
+                var requestBody = ReadRequestBody(file);
+
+                if (string.IsNullOrWhiteSpace(requestBody))
+                    return BadRequest("No input data.");
+
+                var command = new DocumentProcessCommand
                 {
-                    string requestBody = await reader.ReadToEndAsync();
-                    if (string.IsNullOrWhiteSpace(requestBody))
-                    {
-                        return BadRequest("No input data.");
-                    }
+                    RequestBody = requestBody,
+                    NumberOfItems = x
+                };
 
-                    var command = new DocumentProcessCommand
-                    {
-                        RequestBody = requestBody,
-                        NumberOfItems = x
-                    };
+                var response = _documentProcessorFacade.ProcessDocument(command);
+                return Ok(response);
 
-                    var response = await _documentProcessorFacade.ProcessDocument(command);
-                    return Ok(response);
-                }
             }
             catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        private static string ReadRequestBody(IFormFile file)
+        {
+            using (var reader = new StreamReader(file.OpenReadStream()))
+            {
+                return reader.ReadToEnd();
             }
         }
 
@@ -74,21 +71,6 @@ namespace DocumentProcessor.Controllers
             }
 
             return fileExtension.Equals(validExtension, StringComparison.OrdinalIgnoreCase);
-        }
-
-        private static bool IsAuthorized(string authHeader)
-        {
-            if (authHeader != null && authHeader.StartsWith("Basic "))
-            {
-                var encodedUsernamePassword = authHeader.Split(' ', 2, StringSplitOptions.RemoveEmptyEntries)[1]?.Trim();
-                var decodedUsernamePassword = Encoding.UTF8.GetString(Convert.FromBase64String(encodedUsernamePassword));
-                var username = decodedUsernamePassword.Split(':', 2)[0];
-                var password = decodedUsernamePassword.Split(':', 2)[1];
-
-                return username == ValidUsername && password == ValidPassword;
-            }
-
-            return false;
         }
     }
 }

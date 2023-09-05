@@ -1,5 +1,7 @@
+using DocumentProcessor.Authorization;
 using DocumentProcessor.Facades;
 using DocumentProcessor.Services;
+using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IDocumentProcessorFacade, DocumentProcessorFacade>();
 builder.Services.AddScoped<IDocumentProcessorService, DocumentProcessorService>();
 
+builder.Services.AddAuthentication("BasicAuthentication")
+    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -23,6 +28,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

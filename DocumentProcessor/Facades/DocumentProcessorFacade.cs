@@ -12,9 +12,9 @@ namespace DocumentProcessor.Facades
             _documentProcessorService = documentProcessorService;
         }
 
-        public async Task<DocumentProcessResponse> ProcessDocument(DocumentProcessCommand command)
+        public DocumentProcessResponse ProcessDocument(DocumentProcessCommand command)
         {
-            return await _documentProcessorService.ProcessDocument(command);
+            return _documentProcessorService.ProcessDocument(command);
         }
     }
 }

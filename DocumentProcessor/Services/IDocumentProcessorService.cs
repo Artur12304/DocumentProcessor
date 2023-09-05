@@ -4,6 +4,6 @@ namespace DocumentProcessor.Services
 
     public interface IDocumentProcessorService
     {
-        Task<DocumentProcessResponse> ProcessDocument(DocumentProcessCommand command);
+        DocumentProcessResponse ProcessDocument(DocumentProcessCommand command);
     }
 }
